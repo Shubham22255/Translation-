@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Translate Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --warning: #f9c74f;
+            --error: #e63946;
+            --gray: #6c757d;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+        }
+        
+        header h1 {
+            font-size: 2.8rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .upload-area {
+            border: 3px dashed var(--primary);
+            border-radius: var(--border-radius);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .upload-area h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .upload-area p {
+            color: var(--gray);
+        }
+        
+        .language-selectors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            color: var(--dark);
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        select:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-accent {
+            background-color: var(--accent);
+        }
+        
+        .btn-accent:hover {
+            background-color: #c1121f;
+        }
+        
+        .progress-area {
+            margin: 25px 0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--success);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .result-area {
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            background-color: var(--light);
+        }
+        
+        .page {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .page:last-child {
+            border-bottom: none;
+        }
+        
+        .page-number {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .translated-text {
+            line-height: 1.8;
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+        
+        .feature {
+            text-align: center;
+            padding: 25px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        .feature i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .feature h3 {
+            margin-bottom: 10px;
+            color: var(--secondary);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 50px;
+            color: var(--gray);
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px 0;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PDF Translate Pro</h1>
+            <p>Upload your PDF document, select languages, and get an accurate translation in seconds</p>
+        </header>
+        
+        <div class="app-container">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-upload"></i> Upload PDF</h2>
+                
+                <div class="upload-area" id="dropZone">
+                    <i class="fas fa-file-pdf"></i>
+                    <h3>Drag & Drop your PDF here</h3>
+                    <p>or click to browse files</p>
+                    <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+                </div>
+                
+                <div class="language-selectors">
+                    <div>
+                        <label for="sourceLang">Source Language:</label>
+                        <select id="sourceLang">
+                            <option value="auto">Auto-detect</option>
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="hi">Hindi</option>
+                            <option value="ar">Arabic</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="targetLang">Target Language:</label>
+                        <select id="targetLang">
+                            <option value="en">English</option>
+                            <option value="es">Spanish</option>
+                            <option value="fr">French</option>
+                            <option value="de">German</option>
+                            <option value="zh">Chinese</option>
+                            <option value="ja">Japanese</option>
+                            <option value="hi">Hindi</option>
+                            <option value="ar">Arabic</option>
+                            <option value="ru">Russian</option>
+                            <option value="pt">Portuguese</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn" id="translateBtn">
+                    <i class="fas fa-language"></i> Translate Document
+                </button>
+                
+                <div class="progress-area">
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span id="progressStatus">Waiting for file...</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-accent" id="downloadBtn" disabled>
+                        <i class="fas fa-download"></i> Download Translated PDF
+                    </button>
+                    <button class="btn" id="clearBtn">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-file-alt"></i> Translation Results</h2>
+                
+                <div class="loading hidden" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <p>Translating your document...</p>
+                </div>
+                
+                <div class="result-area" id="resultArea">
+                    <p class="text-center">Your translated content will appear here</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <i class="fas fa-globe"></i>
+                <h3>100+ Languages</h3>
+                <p>Support for over 100 languages with high accuracy</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-lock"></i>
+                <h3>Secure Processing</h3>
+                <p>Your documents are processed securely and never stored</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Fast Translation</h3>
+                <p>Advanced algorithms for quick and accurate translations</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-columns"></i>
+                <h3>Layout Preservation</h3>
+                <p>Maintains original formatting where possible</p>
+            </div>
+        </div>
+        
+        <footer>
+            <p>PDF Translate Pro &copy; 2023 | A powerful PDF translation tool</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const translateBtn = document.getElementById('translateBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressStatus = document.getElementById('progressStatus');
+            const progressPercent = document.getElementById('progressPercent');
+            const resultArea = document.getElementById('resultArea');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            let currentFile = null;
+            
+            // Drag and drop functionality
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#4361ee';
+                dropZone.style.backgroundColor = 'rgba(67, 97, 238, 0.1)';
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.borderColor = '#4361ee';
+                dropZone.style.backgroundColor = 'transparent';
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+            
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+            
+            // Handle file selection
+            function handleFile(file) {
+                if (file.type !== 'application/pdf') {
+                    alert('Please upload a PDF file');
+                    return;
+                }
+                
+                currentFile = file;
+                progressStatus.textContent = 'File selected: ' + file.name;
+                progressBar.style.width = '30%';
+                progressPercent.textContent = '30%';
+                
+                // Update UI
+                dropZone.innerHTML = `
+                    <i class="fas fa-file-pdf" style="color: #4cc9f0;"></i>
+                    <h3>${file.name}</h3>
+                    <p>${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                `;
+            }
+            
+            // Translate button click
+            translateBtn.addEventListener('click', () => {
+                if (!currentFile) {
+                    alert('Please select a PDF file first');
+                    return;
+                }
+                
+                const sourceLang = document.getElementById('sourceLang').value;
+                const targetLang = document.getElementById('targetLang').value;
+                
+                // Show loading state
+                loadingIndicator.classList.remove('hidden');
+                resultArea.classList.add('hidden');
+                progressBar.style.width = '50%';
+                progressPercent.textContent = '50%';
+                progressStatus.textContent = 'Extracting text from PDF...';
+                
+                // Simulate translation process
+                setTimeout(() => {
+                    progressBar.style.width = '80%';
+                    progressPercent.textContent = '80%';
+                    progressStatus.textContent = 'Translating text...';
+                    
+                    setTimeout(() => {
+                        progressBar.style.width = '100%';
+                        progressPercent.textContent = '100%';
+                        progressStatus.textContent = 'Translation complete!';
+                        
+                        // Show results
+                        loadingIndicator.classList.add('hidden');
+                        resultArea.classList.remove('hidden');
+                        displayResults();
+                        
+                        // Enable download button
+                        downloadBtn.disabled = false;
+                    }, 1500);
+                }, 2000);
+            });
+            
+            // Display sample results
+            function displayResults() {
+                resultArea.innerHTML = `
+                    <div class="page">
+                        <span class="page-number">Page 1</span>
+                        <div class="translated-text">
+                            <p>Welcome to the translated document. This is a demonstration of how the translated content would appear in the application.</p>
+                            <p>The text has been translated from the source language to the target language while preserving the structure of the original document.</p>
+                        </div>
+                    </div>
+                    <div class="page">
+                        <span class="page-number">Page 2</span>
+                        <div class="translated-text">
+                            <p>PDF translation technology allows you to easily understand documents in different languages. This is particularly useful for research, business communications, and educational materials.</p>
+                            <p>The translation process maintains the original formatting as much as possible, including paragraphs and section breaks.</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Download button click
+            downloadBtn.addEventListener('click', () => {
+                alert('In a real application, this would download the translated PDF. This functionality requires server-side processing.');
+            });
+            
+            // Clear button click
+            clearBtn.addEventListener('click', () => {
+                currentFile = null;
+                fileInput.value = '';
+                progressBar.style.width = '0%';
+                progressPercent.textContent = '0%';
+                progressStatus.textContent = 'Waiting for file...';
+                resultArea.innerHTML = '<p class="text-center">Your translated content will appear here</p>';
+                downloadBtn.disabled = true;
+                
+                // Reset drop zone
+                dropZone.innerHTML = `
+                    <i class="fas fa-file-pdf"></i>
+                    <h3>Drag & Drop your PDF here</h3>
+                    <p>or click to browse files</p>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>
