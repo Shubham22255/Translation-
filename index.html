@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Language Translator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c 0%, #2a5298 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.98);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            overflow: hidden;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 3rem;
+            background: linear-gradient(to right, #2575fc, #6a11cb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+        }
+        
+        .upload-section {
+            background-color: #f8f9fa;
+            border: 3px dashed #3498db;
+            border-radius: 15px;
+            padding: 40px 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .upload-section:hover {
+            background-color: #e8f4fc;
+            border-color: #2980b9;
+            transform: translateY(-5px);
+        }
+        
+        .upload-icon {
+            font-size: 70px;
+            color: #3498db;
+            margin-bottom: 20px;
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .selected-file {
+            margin-top: 20px;
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 16px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .language-section {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            opacity: 0.6;
+            transition: opacity 0.5s ease;
+        }
+        
+        .language-section.active {
+            opacity: 1;
+        }
+        
+        .language-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .language-options {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .language-option {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .language-checkbox {
+            display: none;
+        }
+        
+        .language-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+            background-color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+            min-height: 150px;
+            justify-content: center;
+            opacity: 0.7;
+        }
+        
+        .language-label.active {
+            opacity: 1;
+            cursor: pointer;
+        }
+        
+        .language-checkbox:checked + .language-label {
+            background-color: #e1f5fe;
+            border-color: #0288d1;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .flag {
+            font-size: 45px;
+            margin-bottom: 15px;
+        }
+        
+        .language-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .action-section {
+            text-align: center;
+        }
+        
+        .translate-btn {
+            padding: 18px 40px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(38, 117, 252, 0.4);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .translate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(38, 117, 252, 0.5);
+        }
+        
+        .translate-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-section {
+            background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .result-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .result-tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .result-tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #7f8c8d;
+        }
+        
+        .result-tab.active {
+            border-bottom: 3px solid #2575fc;
+            color: #2575fc;
+        }
+        
+        .translated-content {
+            flex: 1;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            line-height: 1.6;
+            font-size: 16px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .download-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .download-btn {
+            padding: 12px 25px;
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 176, 155, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 176, 155, 0.4);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .language-options {
+                flex-direction: column;
+            }
+            
+            .result-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .result-tab {
+                flex: 1;
+                text-align: center;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-language"></i> PDF Language Translator</h1>
+            <p class="subtitle">Upload your PDF document and translate all pages to Hindi, English, and Tamil simultaneously with accurate results</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="upload-section" id="uploadArea">
+                    <div class="upload-icon"><i class="fas fa-file-pdf"></i></div>
+                    <h2>Upload your PDF file</h2>
+                    <p>Click anywhere in this box or drag & drop your file</p>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf">
+                    <div class="selected-file" id="selectedFile">No file selected</div>
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+                
+                <div class="language-section" id="languageSection">
+                    <h2><i class="fas fa-globe"></i> Select Languages</h2>
+                    <div class="language-options">
+                        <div class="language-option">
+                            <input type="checkbox" id="hindi" class="language-checkbox" checked>
+                            <label for="hindi" class="language-label">
+                                <div class="flag">🇮🇳</div>
+                                <div class="language-name">Hindi</div>
+                                <p>Translate to Hindi</p>
+                            </label>
+                        </div>
+                        
+                        <div class="language-option">
+                            <input type="checkbox" id="english" class="language-checkbox" checked>
+                            <label for="english" class="language-label">
+                                <div class="flag">🇺🇸</div>
+                                <div class="language-name">English</div>
+                                <p>Original text</p>
+                            </label>
+                        </div>
+                        
+                        <div class="language-option">
+                            <input type="checkbox" id="tamil" class="language-checkbox" checked>
+                            <label for="tamil" class="language-label">
+                                <div class="flag">🇮🇳</div>
+                                <div class="language-name">Tamil</div>
+                                <p>Translate to Tamil</p>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-section">
+                    <button id="translateBtn" class="translate-btn" disabled><i class="fas fa-exchange-alt"></i> Translate PDF</button>
+                    <p>Processing may take a few moments for larger files</p>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="result-section">
+                    <h2><i class="fas fa-file-alt"></i> Translated Content</h2>
+                    <div class="result-tabs">
+                        <div class="result-tab active" data-lang="hindi"><i class="fas hindi-icon"></i> Hindi</div>
+                        <div class="result-tab" data-lang="english"><i class="fas english-icon"></i> English</div>
+                        <div class="result-tab" data-lang="tamil"><i class="fas tamil-icon"></i> Tamil</div>
+                    </div>
+                    
+                    <div class="translated-content" id="translatedContent">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Upload a PDF and click Translate to see the results</p>
+                        </div>
+                    </div>
+                    
+                    <div class="download-section">
+                        <button class="download-btn" id="downloadBtn" disabled>
+                            <span>Download Translations</span>
+                            <span>📥</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Note: This demonstration simulates PDF translation. In a production environment, this would integrate with a PDF text extraction library and translation API.</p>
+            <p>© 2023 PDF Language Translator | All rights reserved</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const selectedFile = document.getElementById('selectedFile');
+            const fileInfo = document.getElementById('fileInfo');
+            const languageSection = document.getElementById('languageSection');
+            const languageLabels = document.querySelectorAll('.language-label');
+            const translateBtn = document.getElementById('translateBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const translatedContent = document.getElementById('translatedContent');
+            const resultTabs = document.querySelectorAll('.result-tab');
+            
+            // Sample content for demonstration
+            const sampleContents = {
+                hindi: `
+                    <h3>PDF अनुवाद परिणाम</h3>
+                    <p>नमस्ते! यह PDF अनुवाद का एक उदाहरण है।</p>
+                    <p>मूल PDF दस्तावेज़ की सभी सामग्री का हिंदी में सटीक अनुवाद किया गया है।</p>
+                    <p>यह अनुवाद उन्नत एल्गोरिदम का उपयोग करता है जो संदर्भ को समझता है और सही अनुवाद प्रदान करता है।</p>
+                    <p>अनुवाद के कुछ उदाहरण:</p>
+                    <ul>
+                        <li>Hello -> नमस्ते</li>
+                        <li>Thank you -> धन्यवाद</li>
+                        <li>How are you? -> आप कैसे हैं?</li>
+                        <li>This is a document -> यह एक दस्तावेज़ है</li>
+                    </ul>
+                    <p>वास्तविक अनुप्रयोग में, आपको PDF पृष्ठों से पाठ निकालने के लिए pdf.js जैसी लाइब्रेरी का उपयोग करना होगा और फिर अनुवाद के लिए इसे Google Translate API या किसी अन्य अनुवाद सेवा में पास करना होगा।</p>
+                `,
+                english: `
+                    <h3>PDF Translation Results</h3>
+                    <p>Hello! This is an example of PDF translation.</p>
+                    <p>All contents of the original PDF document have been accurately translated.</p>
+                    <p>This translation uses advanced algorithms that understand context and provide accurate translations.</p>
+                    <p>Examples of translations:</p>
+                    <ul>
+                        <li>Hello -> नमस्ते (Hindi), வணக்கம் (Tamil)</li>
+                        <li>Thank you -> धन्यवाद (Hindi), நன்றி (Tamil)</li>
+                        <li>How are you? -> आप कैसे हैं? (Hindi), நீங்கள் எப்படி இருக்கிறீர்கள்? (Tamil)</li>
+                        <li>This is a document -> यह एक दस्तावेज़ है (Hindi), இது ஒரு ஆவணம் (Tamil)</li>
+                    </ul>
+                    <p>In a real application, you would need to use a library like pdf.js to extract text from PDF pages and then pass it to a translation API like Google Translate for processing.</p>
+                `,
+                tamil: `
+                    <h3>PDF மொழிபெயர்ப்பு முடிவுகள்</h3>
+                    <p>வணக்கம்! இது PDF மொழிபெயர்ப்பின் ஒரு எடுத்துக்காட்டு.</p>
+                    <p>அசல் PDF ஆவணத்தின் அனைத்து உள்ளடக்கங்களும் தமிழில் துல்லியமாக மொழிபெயர்க்கப்பட்டுள்ளன.</p>
+                    <p>இந்த மொழிபெயர்ப்பு சூழலைப் புரிந்துகொள்ளும் மேம்பட்ட அல்காரிதம்களைப் பயன்படுத்துகிறது மற்றும் துல்லியமான மொழிபெயர்ப்புகளை வழங்குகிறது.</p>
+                    <p>மொழிபெயர்ப்புகளின் சில எடுத்துக்காட்டுகள்:</p>
+                    <ul>
+                        <li>Hello -> வணக்கம்</li>
+                        <li>Thank you -> நன்றி</li>
+                        <li>How are you? -> நீங்கள் எப்படி இருக்கிறீர்கள்?</li>
+                        <li>This is a document -> இது ஒரு ஆவணம்</li>
+                    </ul>
+                    <p>உண்மையான பயன்பாட்டில், PDF பக்கங்களிலிருந்து உரையைப் பிரித்தெடுக்க pdf.js போன்ற ஒரு நூலகத்தைப் பயன்படுத்த வேண்டும், பின்னர் செயலாக்கத்திற்காக அதை Google Translate API அல்லது வேறு மொழிபெயர்ப்பு சேவையில் அனுப்ப வேண்டும்.</p>
+                `
+            };
+            
+            // Handle file selection
+            fileInput.addEventListener('change', handleFileSelection);
+            
+            function handleFileSelection() {
+                if (fileInput.files.length) {
+                    const file = fileInput.files[0];
+                    if (file.type === 'application/pdf') {
+                        selectedFile.textContent = `Selected: ${file.name}`;
+                        fileInfo.innerHTML = `Size: ${formatFileSize(file.size)} | Type: PDF`;
+                        
+                        // Enable language selection and translate button
+                        languageSection.classList.add('active');
+                        languageLabels.forEach(label => label.classList.add('active'));
+                        translateBtn.disabled = false;
+                    } else {
+                        selectedFile.textContent = 'Please select a PDF file';
+                        fileInfo.innerHTML = '';
+                        translateBtn.disabled = true;
+                    }
+                } else {
+                    selectedFile.textContent = 'No file selected';
+                    fileInfo.innerHTML = '';
+                    translateBtn.disabled = true;
+                }
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Handle translation button click
+            translateBtn.addEventListener('click', function() {
+                // Show loading state
+                translatedContent.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Extracting text from PDF... This may take a moment.</p>
+                    </div>
+                `;
+                
+                // Simulate translation process
+                setTimeout(() => {
+                    translatedContent.innerHTML = `
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Translating content to selected languages... Almost done!</p>
+                        </div>
+                    `;
+                    
+                    setTimeout(showTranslatedContent, 1500);
+                }, 2000);
+                
+                // Enable download button
+                downloadBtn.disabled = false;
+            });
+            
+            // Handle tab switching
+            resultTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    resultTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const lang = this.getAttribute('data-lang');
+                    showTranslation(lang);
+                });
+            });
+            
+            function showTranslatedContent() {
+                showTranslation('hindi');
+            }
+            
+            function showTranslation(lang) {
+                translatedContent.innerHTML = sampleContents[lang] || `
+                    <p>No translation available for this language.</p>
+                `;
+            }
+            
+            // Handle download button
+            downloadBtn.addEventListener('click', function() {
+                alert('In a real application, this would download the translated PDFs. This is a simulation.');
+            });
+        });
+    </script>
+</body>
+</html>
